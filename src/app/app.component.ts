@@ -11,7 +11,7 @@ export class AppComponent implements OnInit {
   
     // configuration settings
     publicKey = '***REMOVED***';
-    backServerUrl = '***REMOVED***';
+    backendServerUrl = '***REMOVED***';
     licenseKey = '***REMOVED***';
 
     // tslint:disable-next-line:use-lifecycle-interface
@@ -22,7 +22,8 @@ export class AppComponent implements OnInit {
         tapBackSide : true,
         licenseKey: this.licenseKey,
         steps: [
-            {type: 'front', name: 'Image'},
+            {type: 'front', name: 'Front Scan'},
+            {type: 'back', name: 'Back Scan'},
             {type: 'face', name: 'Selfie'}
         ],
         submit (data) {
@@ -46,7 +47,7 @@ export class AppComponent implements OnInit {
                 body: JSON.stringify (request)
             }).then (response => response.json ())
                 .then (response => {
-                    fetch (this.backEndUrl + '/api/ValidationRequests/complete/', {
+                    fetch (this.backendServerUrl + '/api/ValidationRequests/complete/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json;charset=utf-8'
