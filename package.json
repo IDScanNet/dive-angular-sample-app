@@ -1,5 +1,5 @@
 {
-  "name": "angular-sample-app",
+  "name": "dvs-sample-angular-app",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
