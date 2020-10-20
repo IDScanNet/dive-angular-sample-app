@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { environment } from '../environments/environment';
 import IDVC from '@idscan/idvc';
 
 @Component({
@@ -9,21 +10,15 @@ import IDVC from '@idscan/idvc';
 })
 export class AppComponent implements OnInit {
   
-    // configuration settings
-    publicKey = '***REMOVED***';
-    backendServerUrl = '***REMOVED***';
-    licenseKey = '***REMOVED***';
-
     // tslint:disable-next-line:use-lifecycle-interface
     ngOnInit() {
         new IDVC({
         el: 'videoCapturingEl',
         networkUrl: '/assets/networks',
         tapBackSide : true,
-        licenseKey: this.licenseKey,
+        licenseKey: environment.licenseKey,
         steps: [
             {type: 'front', name: 'Front Scan'},
-            {type: 'back', name: 'Back Scan'},
             {type: 'face', name: 'Selfie'}
         ],
         submit (data) {
@@ -42,12 +37,12 @@ export class AppComponent implements OnInit {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
-                    'Authorization': `Bearer ${this.publicKey}`
+                    'Authorization': `Bearer ${environment.publicKey}`
                 },
                 body: JSON.stringify (request)
             }).then (response => response.json ())
                 .then (response => {
-                    fetch (this.backendServerUrl + '/api/ValidationRequests/complete/', {
+                    fetch (environment.backendServerUrl + '/api/ValidationRequests/complete/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json;charset=utf-8'
