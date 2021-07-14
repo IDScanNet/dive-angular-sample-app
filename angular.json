@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/dvs-sample-angular-app",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -69,7 +69,7 @@
             "browserTarget": "dvs-sample-angular-app:build",
             "customWebpackConfig": {
               "path": "./custom-webpack.config.js"
-            },
+            }
           },
           "configurations": {
             "production": {
