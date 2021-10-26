@@ -6,81 +6,115 @@ import IDVC from '@idscan/idvc';
   selector: 'app-root',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css', '../../node_modules/@idscan/idvc/dist/css/idvc.css']
+  styleUrls: [
+    './app.component.css',
+    '../../node_modules/@idscan/idvc/dist/css/idvc.css',
+  ],
 })
 export class AppComponent implements OnInit {
-  
-    // tslint:disable-next-line:use-lifecycle-interface
-    ngOnInit() {
 
-        console.log('license key', environment.licenseKey);
+  constructor() {
+  }
 
-        new IDVC({
-          el: 'videoCapturingEl',
-          networkUrl: '/assets/networks',
-          tapBackSide: true,
-          capturingMode: 4,
-          licenseKey: environment.licenseKey,
-          enableFlash: true,
-          steps: [
-            { type: 'front', name: 'Front Scan' },
-            { type: 'face', name: 'Selfie' },
-          ],
-          submit(data) {
-            let backStep = data.steps.find((item) => item.type === 'back');
-            let trackString =
-              backStep && backStep.trackString ? backStep.trackString : '';
+  // tslint:disable-next-line:use-lifecycle-interface
+  ngOnInit() {
+    let idvc = new IDVC({
+      el: 'videoCapturingEl',
+      licenseKey: 'LICENSE KEY REPLACE ME',
+      isShowManualSwitchButton: true,
+      showSubmitBtn: true,
+      isShowVersion: true,
+      tapOnVideo: false,
+      tapBackSide: false,
+      minPDFframes: 1,
+      parseMRZ: false,
+      tapFace: false,
+      enableLimitation: true,
+      autoContinue: true,
+      resizeUploadedImage: 1500,
+      showForceCapturingBtn: false,
+      fixFrontOrientAfterUpload: false,
+      enableFlash: false,
+      capturingMode: '4',
+      steps: [
+        { type: 'front', name: 'Front Scan' },
+        { type: 'face', name: 'Selfie' },
+      ],
+      useCDN: true,
+      networkUrl: '/assets/networks',
+      showPreviewForOneStep: true,
+      priority: 'auto',
+      realFaceMode: 'all',
+      types: ['ID'],
+      strictAllowedTypes: false,
+      enableGeolocation: false,
+      displayParsedData: false,
+      onChange(data) {
+        console.log(data);
+      },
+      onCameraError(data) {
+        console.log(data);
+      },
+      onReset(data) {
+        console.log(data);
+      },
+      onRetakeHook(data) {
+        console.log(data);
+      },
+      submit(data) {
+        let backStep = data.steps.find((item) => item.type === 'back');
+        let trackString =
+          backStep && backStep.trackString ? backStep.trackString : '';
 
-            let request = {
-              frontImageBase64: data.steps
-                .find((item) => item.type === 'front')
-                .img.split(/:image\/(jpeg|png);base64,/)[2],
-              backOrSecondImageBase64: backStep.img.split(
-                /:image\/(jpeg|png);base64,/
-              )[2],
-              faceImageBase64: data.steps
-                .find((item) => item.type === 'face')
-                .img.split(/:image\/(jpeg|png);base64,/)[2],
-              documentType: data.documentType,
-              trackString: trackString,
-            };
+        let request = {
+          frontImageBase64: data.steps
+            .find((item) => item.type === 'front')
+            .img.split(/:image\/(jpeg|png);base64,/)[2],
+          backOrSecondImageBase64: backStep.img.split(
+            /:image\/(jpeg|png);base64,/
+          )[2],
+          faceImageBase64: data.steps
+            .find((item) => item.type === 'face')
+            .img.split(/:image\/(jpeg|png);base64,/)[2],
+          documentType: data.documentType,
+          trackString: trackString,
+          userAgent: window.navigator.userAgent,
+          captureMethod: data.captureMethod,
+          verifyFace: true,
+        };
 
-            fetch('https://dvs2.idware.net/api/Request', {
+        fetch('https://dvs2.idware.net/api/Request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            Authorization: 'BEARER TOKEN REPLACE ME',
+          },
+          body: JSON.stringify(request),
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            fetch('BACKEND SERVER URL REPLACE ME', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json;charset=utf-8',
-                Authorization: `Bearer ${environment.publicKey}`,
               },
-              body: JSON.stringify(request),
+              body: JSON.stringify({
+                requestId: response.requestId,
+              }),
             })
               .then((response) => response.json())
-              .then((response) => {
-                fetch(
-                  environment.backendServerUrl +
-                    '/api/ValidationRequests/complete/',
-                  {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                      'Content-Type': 'application/json;charset=utf-8',
-                    },
-                    body: JSON.stringify({
-                      requestId: response.requestId,
-                      documentType: response.documentType,
-                    }),
-                  }
-                )
-                  .then((response) => response.json())
-                  .then((data) => {
-                    alert(
-                      data.payload.isDocumentSuccess
-                        ? 'Document valid'
-                        : 'Document invalid'
-                    );
-                  });
-              })
-              .catch(() => {});
-          },
-        });
-	}
+              .then((data) => {
+                console.log(data);
+              });
+          })
+          .catch((err) => {
+            console.err(err);
+          });
+      },
+    });
+  
+  }
+
+
+
 }

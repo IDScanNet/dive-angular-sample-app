@@ -1,4 +1,4 @@
-# Project Setup
+# DVS Web API Angular Sample Application
 
 1. Install project dependencies
 ```
