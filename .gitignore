@@ -1,6 +1,6 @@
 /dist
 /node_modules
+/e2e
 .firebase
 .firebaserc
-src/assets/networks/
 firebase.json

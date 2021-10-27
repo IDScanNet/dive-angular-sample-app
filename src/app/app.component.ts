@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { environment } from '../environments/environment';
 import IDVC from '@idscan/idvc';
 
 @Component({
@@ -108,7 +107,7 @@ export class AppComponent implements OnInit {
               });
           })
           .catch((err) => {
-            console.err(err);
+            console.log(err);
           });
       },
     });
