@@ -30,16 +30,8 @@ firebase login
 ```
 firebase init
 ```
-- Select `Yes` you are ready to proceed
-- Select only the `Hosting` option
-- Create a new project in your firebase account for this deployment
-- Use `dist/dvs-sample-angular-app` as your public directory
-- Select `Yes` when asked if you want to configure as a single-page app
-- Select `No` when asked if you want to set up automatic builds and deployments with GitHub
-- Select `No` when asked if you want to overwrite the `dist/dvs-sample-angular-app/index.html` file
 
-
-4. Deploy the project to firebase
+1. Deploy the project to firebase
 
 ```
 firebase deploy

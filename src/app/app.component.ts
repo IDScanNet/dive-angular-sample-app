@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
 
   // tslint:disable-next-line:use-lifecycle-interface
   ngOnInit() {
-    let idvc = new IDVC({
+    new IDVC({
       el: 'videoCapturingEl',
       licenseKey: 'LICENSE KEY REPLACE ME',
       isShowManualSwitchButton: true,
