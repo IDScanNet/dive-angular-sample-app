@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import IDVC from '@idscan/idvc2';
-import '@idscan/idvc2/dist/css/idvc.css';
+
 
 @Component({
   selector: 'app-root',
