@@ -81,10 +81,9 @@ export class AppComponent implements OnInit {
       submit(data: any) {
         idvc.showSpinner(true);
         let frontStep, pdfStep, faceStep, mrzStep, photoStep, barcodeStep;
-        let frontImage, backImage, faceImage, photoImage, barcodeImage;
-        let trackString;
+        let frontImage, backImage, faceImage;
+        let rawTrackString;
         let captureMethod;
-        let verifyFace = true;
 
         switch (data.documentType) {
           // Drivers License and Identification Card
@@ -93,11 +92,11 @@ export class AppComponent implements OnInit {
             pdfStep = data.steps.find((item: any) => item.type === 'pdf');
             faceStep = data.steps.find((item: any) => item.type === 'face');
 
-            frontImage = frontStep.img.split(/:image\/(jpeg|png);base64,/)[2];
-            backImage = pdfStep.img.split(/:image\/(jpeg|png);base64,/)[2];
-            faceImage = faceStep.img.split(/:image\/(jpeg|png);base64,/)[2];
+            frontImage = frontStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
+            backImage = pdfStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
+            faceImage = faceStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
 
-            trackString =
+            rawTrackString =
               pdfStep && pdfStep.trackString ? pdfStep.trackString : '';
 
             captureMethod =
@@ -111,10 +110,10 @@ export class AppComponent implements OnInit {
             mrzStep = data.steps.find((item: any) => item.type === 'mrz');
             faceStep = data.steps.find((item: any) => item.type === 'face');
 
-            frontImage = mrzStep.img.split(/:image\/(jpeg|png);base64,/)[2];
-            faceImage = faceStep.img.split(/:image\/(jpeg|png);base64,/)[2];
+            frontImage = mrzStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
+            faceImage = faceStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
 
-            trackString = mrzStep && mrzStep.mrzText ? mrzStep.mrzText : '';
+            rawTrackString = mrzStep && mrzStep.mrzText ? mrzStep.mrzText : '';
 
             captureMethod =
               JSON.stringify(+mrzStep.isAuto) +
@@ -131,11 +130,11 @@ export class AppComponent implements OnInit {
             mrzStep = data.steps.find((item: any) => item.type === 'mrz');
             faceStep = data.steps.find((item: any) => item.type === 'face');
 
-            frontImage = frontStep.img.split(/:image\/(jpeg|png);base64,/)[2];
-            backImage = mrzStep.img.split(/:image\/(jpeg|png);base64,/)[2];
-            faceImage = faceStep.img.split(/:image\/(jpeg|png);base64,/)[2];
+            frontImage = frontStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
+            backImage = mrzStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
+            faceImage = faceStep.img.split(/:image\/(jpeg|png|webp);base64,/)[2];
 
-            trackString = mrzStep && mrzStep.mrzText ? mrzStep.mrzText : '';
+            rawTrackString = mrzStep && mrzStep.mrzText ? mrzStep.mrzText : '';
 
             captureMethod =
               JSON.stringify(+frontStep.isAuto) +
@@ -143,39 +142,25 @@ export class AppComponent implements OnInit {
               JSON.stringify(+faceStep.isAuto);
 
             break;
-          case 8:
-            photoStep = data.steps.find((item: any) => item.type === 'photo');
-            photoImage = photoStep.img.split(/:image\/(jpeg|png);base64,/)[2];
-            captureMethod = JSON.stringify(+photoStep.isAuto);
-            verifyFace = false;
-            break;
-          case 9:
-            barcodeStep = data.steps.find(
-              (item: any) => item.type === 'barcode'
-            );
-            barcodeImage = barcodeStep.img.split(
-              /:image\/(jpeg|png);base64,/
-            )[2];
-            captureMethod = JSON.stringify(+barcodeStep.isAuto);
-            verifyFace = false;
-            break;
           default:
         }
 
+        const trackStringArray = rawTrackString.split(".");
+        let trackString = trackStringArray[0];
+        let barcodeParams = trackStringArray[1];
+    
         let request = {
           frontImageBase64: frontImage,
           backOrSecondImageBase64: backImage,
           faceImageBase64: faceImage,
           documentType: data.documentType,
-          trackString: trackString,
-          ssn: null,
-          overriddenSettings: null,
-          userAgent: window.navigator.userAgent,
-          captureMethod: captureMethod,
-          verifyFace: verifyFace,
+          trackString:{
+            data:  trackString,
+            barcodeParams: barcodeParams
+          }
         };
 
-        fetch('https://dvs2.idware.net/api/v3/Verify', {
+        fetch('https://dvs2.idware.net/api/v4/verify', {
           method: 'POST',
           headers: {
             Authorization: 'Bearer SECRET_KEY',
